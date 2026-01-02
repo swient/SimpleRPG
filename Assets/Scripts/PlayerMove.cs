@@ -1,5 +1,6 @@
 using UnityEngine;
 using UnityEngine.AI;
+using UnityEngine.EventSystems;
 
 public class PlayerMove : MonoBehaviour
 {
@@ -12,7 +13,7 @@ public class PlayerMove : MonoBehaviour
 
     void Update()
     {
-        if (Input.GetMouseButtonDown(0))
+        if (Input.GetMouseButtonDown(0) && !EventSystem.current.IsPointerOverGameObject())
         {
             Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
 
@@ -20,7 +21,15 @@ public class PlayerMove : MonoBehaviour
             bool isCollider = Physics.Raycast(ray, out hit);
             if (isCollider)
             {
-                playerAgent.SetDestination(hit.point);
+                if (hit.collider.tag == "Ground")
+                {
+                    playerAgent.stoppingDistance = 0f;
+                    playerAgent.SetDestination(hit.point);
+                }
+                else if (hit.collider.tag == "Interactable")
+                {
+                    hit.collider.GetComponent<InteractableObject>().OnClick(playerAgent);
+                }
             }
         }
     }
