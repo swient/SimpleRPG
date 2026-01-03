@@ -2,8 +2,33 @@ using UnityEngine;
 
 public class JavelinWeapon : Weapon
 {
+    public float bulletSpeed;
+    public GameObject bulletPrefab;
+    private GameObject bulletGo;
+
+    private void Start()
+    {
+        SpawnBullet();
+    }
+
     public override void Attack()
     {
-        base.Attack();
+        if (bulletGo != null)
+        {
+            bulletGo.transform.parent = null;
+            bulletGo.GetComponent<Rigidbody>().linearVelocity = transform.forward * bulletSpeed;
+            bulletGo = null;
+            Invoke("SpawnBullet", 0.5f);
+        }
+        else
+        {
+            return;
+        }
+    }
+
+    private void SpawnBullet()
+    {
+        bulletGo = GameObject.Instantiate(bulletPrefab, transform.position, transform.rotation);
+        bulletGo.transform.parent = transform;
     }
 }
